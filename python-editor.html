@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Python Editor | Purushottam Pradhan</title>
+    <meta name="theme-color" content="#0f1419" />
+    <link rel="stylesheet" href="course-theme.css" />
+    <link rel="stylesheet" href="course-python-runner.css" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "DM Sans", system-ui, sans-serif;
+        background: #0f1419;
+        color: #e8eef4;
+      }
+
+      .editor-page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 5rem 1rem 2rem;
+      }
+
+      .editor-page h1 {
+        margin: 0 0 0.5rem;
+        font-size: 1.75rem;
+      }
+
+      .editor-page p {
+        margin: 0 0 1.5rem;
+        color: #8fa3b8;
+        line-height: 1.6;
+      }
+
+      .editor-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .editor-links a {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.55rem 0.9rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #e8eef4;
+        background: #1a222d;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 999px;
+        text-decoration: none;
+      }
+
+      .editor-links a:hover {
+        border-color: #3d9cfd;
+        color: #3d9cfd;
+      }
+
+      .standalone-editor {
+        background: #0f172a;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .standalone-editor .py-editor-header {
+        border-radius: 12px 12px 0 0;
+      }
+
+      .standalone-editor .py-editor-panel {
+        position: static;
+        display: flex !important;
+        width: 100%;
+        height: min(72vh, 640px);
+        max-height: none;
+        left: auto;
+        top: auto;
+        transform: none;
+        box-shadow: none;
+        border-radius: 12px;
+      }
+
+      .standalone-editor .py-editor-fab,
+      .standalone-editor .py-editor-overlay {
+        display: none !important;
+      }
+
+      .hint {
+        margin-top: 1rem;
+        font-size: 0.85rem;
+        color: #8fa3b8;
+      }
+
+      kbd {
+        padding: 0.1rem 0.35rem;
+        font-size: 0.8rem;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        background: #1a222d;
+      }
+    </style>
+  </head>
+  <body class="course-page">
+    <a class="portfolio-back" href="index.html">← Portfolio</a>
+
+    <main class="editor-page">
+      <h1>Python Editor</h1>
+      <p>
+        Run Python for DSA and AI/ML exercises directly in your browser. Uses
+        Pyodide — no server required. NumPy and Pandas load automatically when
+        your code imports them.
+      </p>
+
+      <div class="editor-links">
+        <a href="dsa-master-course.html">DSA Master Course</a>
+        <a href="Foundations_of_Artificial_Intelligence.html">Foundations of AI</a>
+      </div>
+
+      <div class="standalone-editor" id="standalone-mount"></div>
+
+      <p class="hint">
+        Tip: press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> (or <kbd>⌘</kbd>+<kbd>Enter</kbd>)
+        to run code. On course pages, click <strong>Open</strong> on any code block
+        to load that snippet into the editor.
+      </p>
+    </main>
+
+    <script src="course-python-runner.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const panel = document.querySelector(".py-editor-panel");
+        const fab = document.querySelector(".py-editor-fab");
+        const overlay = document.querySelector(".py-editor-overlay");
+        const mount = document.getElementById("standalone-mount");
+        if (panel && mount) {
+          mount.appendChild(panel);
+          panel.classList.add("is-open");
+        }
+        if (fab) fab.remove();
+        if (overlay) overlay.remove();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,430 @@
+/* Course chrome + Python editor — portfolio design tokens */
+
+.portfolio-back {
+  position: fixed;
+  top: 0.85rem;
+  left: 0.85rem;
+  z-index: 200;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-sans, "DM Sans", system-ui, sans-serif);
+  color: var(--text-muted, #8fa3b8);
+  background: var(--surface, #232d3b);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.portfolio-back:hover {
+  color: var(--accent, #3d9cfd);
+  border-color: rgba(61, 156, 253, 0.35);
+  text-decoration: none;
+}
+
+.course-nav-toggle {
+  display: none;
+  position: fixed;
+  top: 0.85rem;
+  right: 0.85rem;
+  z-index: 200;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-sans, "DM Sans", system-ui, sans-serif);
+  color: var(--text, #e8eef4);
+  background: var(--surface, #232d3b);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+@media (min-width: 769px) {
+  .portfolio-back {
+    left: calc(var(--sidebar-width, 280px) + 1rem);
+  }
+
+  .course-nav-toggle {
+    display: none !important;
+  }
+
+  /* DSA course — sidebar + content columns */
+  body.course-page .layout {
+    padding-top: 0;
+  }
+
+  body.course-page .layout > nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width, 280px);
+    height: 100vh;
+    padding-top: 1rem;
+    z-index: 60;
+    overflow-y: auto;
+  }
+
+  body.course-page .layout > main {
+    margin-left: var(--sidebar-width, 280px) !important;
+    margin-right: 0 !important;
+    width: calc(100% - var(--sidebar-width, 280px)) !important;
+    max-width: none !important;
+  }
+
+  /* DSA header spans content column only */
+  body.course-page > header:not(.course-topbar) {
+    left: var(--sidebar-width, 280px);
+    width: calc(100% - var(--sidebar-width, 280px));
+  }
+
+  /* AI course — keep sidebar and content separate */
+  body.course-page .container > .sidebar {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width, 280px);
+    height: 100vh;
+    z-index: 60;
+    overflow-y: auto;
+  }
+
+  body.course-page .container > .content {
+    margin-left: var(--sidebar-width, 280px) !important;
+    width: calc(100% - var(--sidebar-width, 280px)) !important;
+    max-width: none !important;
+  }
+
+  .course-nav-backdrop {
+    display: none !important;
+  }
+
+  body.course-page .layout > main {
+    padding: calc(var(--header-height, 56px) + 1.5rem) clamp(1.25rem, 3vw, 2.5rem) 4rem !important;
+  }
+}
+
+.course-nav-toggle[aria-expanded="true"] {
+  background: var(--accent, #3d9cfd);
+  color: #0f1419;
+  border-color: var(--accent, #3d9cfd);
+}
+
+body.py-editor-open {
+  overflow: hidden;
+}
+
+body.course-nav-drawer-open {
+  overflow: hidden;
+}
+
+/* Code block actions */
+pre.code-runnable {
+  position: relative;
+  padding-top: 2.35rem !important;
+}
+
+.code-run-btn {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-family: var(--font-sans, "DM Sans", system-ui, sans-serif);
+  color: #0f1419;
+  background: var(--accent, #3d9cfd);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.code-run-btn:hover {
+  background: var(--accent-hover, #5aadff);
+}
+
+/* Python editor — centered modal */
+.py-editor-fab {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 300;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--font-sans, "DM Sans", system-ui, sans-serif);
+  color: #0f1419;
+  background: linear-gradient(135deg, var(--accent, #3d9cfd), var(--accent-2, #7c5cff));
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(61, 156, 253, 0.3);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.py-editor-fab:hover {
+  transform: translateY(-1px);
+}
+
+body.py-editor-open .py-editor-fab {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+}
+
+.py-editor-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 350;
+  display: none;
+  background: rgba(8, 10, 14, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.py-editor-overlay.is-open {
+  display: block;
+}
+
+.py-editor-panel {
+  position: fixed;
+  z-index: 400;
+  display: none;
+  flex-direction: column;
+  width: min(920px, calc(100vw - 1.5rem));
+  height: min(78vh, 720px);
+  max-height: calc(100vh - 2rem);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg-elevated, #1a222d);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius, 12px);
+  box-shadow: var(--shadow, 0 24px 48px rgba(0, 0, 0, 0.35));
+  overflow: hidden;
+}
+
+.py-editor-panel.is-open {
+  display: flex;
+}
+
+.py-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  padding: 0.85rem 1rem;
+  background: var(--surface, #232d3b);
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+}
+
+.py-editor-header-left {
+  min-width: 0;
+}
+
+.py-editor-title {
+  margin: 0;
+  font-family: var(--font-display, "Fraunces", Georgia, serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text, #e8eef4);
+}
+
+.py-editor-status {
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  color: var(--text-muted, #8fa3b8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.py-editor-actions {
+  display: flex;
+  gap: 0.45rem;
+  flex-shrink: 0;
+}
+
+.py-editor-actions button,
+.py-editor-close {
+  padding: 0.42rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--font-sans, "DM Sans", system-ui, sans-serif);
+  border-radius: 8px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  background: var(--bg-elevated, #1a222d);
+  color: var(--text, #e8eef4);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.py-editor-actions button.primary {
+  background: var(--accent, #3d9cfd);
+  border-color: var(--accent, #3d9cfd);
+  color: #0f1419;
+}
+
+.py-editor-actions button.primary:hover {
+  background: var(--accent-hover, #5aadff);
+}
+
+.py-editor-tabs {
+  display: flex;
+  gap: 0;
+  flex-shrink: 0;
+  background: var(--bg, #0f1419);
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+}
+
+.py-editor-tab {
+  flex: 1;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--font-sans, "DM Sans", system-ui, sans-serif);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, #8fa3b8);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.py-editor-tab.is-active {
+  color: var(--text, #e8eef4);
+  border-bottom-color: var(--accent, #3d9cfd);
+  background: var(--accent-soft, rgba(61, 156, 253, 0.15));
+}
+
+.py-editor-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.py-editor-pane {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.py-editor-pane.is-active {
+  display: flex;
+}
+
+.py-editor-pane-label {
+  flex-shrink: 0;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted, #8fa3b8);
+  background: var(--bg, #0f1419);
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+}
+
+.py-editor-code {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  padding: 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--code-text, #e2e8f0);
+  background: var(--code-bg, #121820);
+  border: none;
+  resize: none;
+  outline: none;
+  overflow: auto;
+  box-sizing: border-box;
+  tab-size: 4;
+}
+
+.py-editor-output {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 1rem;
+  overflow: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--text-muted, #8fa3b8);
+  background: var(--code-bg, #121820);
+  white-space: pre-wrap;
+  word-break: break-word;
+  box-sizing: border-box;
+}
+
+.py-editor-output:empty::before {
+  content: "Output will appear here after you run the code.";
+  color: #5a6d82;
+  font-style: italic;
+}
+
+@media (min-width: 768px) {
+  .py-editor-tabs {
+    display: none;
+  }
+
+  .py-editor-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  .py-editor-pane {
+    display: flex !important;
+    border-right: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  }
+
+  .py-editor-pane:last-child {
+    border-right: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .py-editor-panel {
+    width: calc(100vw - 0.75rem);
+    height: calc(100dvh - 0.75rem);
+    max-height: none;
+    border-radius: 10px;
+  }
+
+  .py-editor-header {
+    flex-wrap: wrap;
+    padding: 0.7rem 0.85rem;
+  }
+
+  .py-editor-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .py-editor-actions button:not(.primary):not(.py-editor-close) {
+    display: none;
+  }
+
+  .py-editor-fab {
+    bottom: 1rem;
+    right: 1rem;
+  }
+}

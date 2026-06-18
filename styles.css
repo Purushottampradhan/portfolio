@@ -953,6 +953,64 @@ section {
   white-space: nowrap;
 }
 
+.courses {
+  background: var(--bg);
+}
+
+.course-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .course-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.course-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.course-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-2);
+}
+
+.course-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.course-card p {
+  margin: 0;
+  flex: 1;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.course-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
+}
+
+.course-actions .btn {
+  font-size: 0.85rem;
+  padding: 0.55rem 1rem;
+}
+
 .about-grid {
   display: grid;
   gap: 2rem;
