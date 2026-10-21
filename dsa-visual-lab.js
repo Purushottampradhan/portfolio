@@ -301,8 +301,7 @@ def run_script(source, _unused=None):
   let motions = [];
   const wireAt = new Map();
 
-  const FREE_CODE = `# Change anything, then press Run.
-nums = [4, 1, 7]
+  const FREE_CODE = `nums = [4, 1, 7]
 total = 0
 for x in nums:
     total = total + x
@@ -837,7 +836,7 @@ print(ages["Ada"])
       return "Enter " + frame.fn + "(" + args + "). Python creates a new memory frame for this call.";
     }
     if (frame.e === "return") {
-      if (frame.fn === "<module>") return "The program is done. Look at what it printed and what it still remembers.";
+      if (frame.fn === "<module>") return "Finished.";
       const extra = frame.final ? " This answer is the output of the program." : " The caller receives this value.";
       return "Return " + shortValue(frame.ret) + " from " + frame.fn + "." + extra;
     }
@@ -1202,17 +1201,17 @@ print(ages["Ada"])
       }
       .vl-outbar {
         flex: none;
-        min-height: 2.4rem;
-        max-height: 3.6rem;
-        overflow: hidden;
+        min-height: 5.2rem;
+        max-height: 8.4rem;
+        overflow: auto;
         white-space: pre-wrap;
         font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-        font-size: 0.82rem;
-        line-height: 1.35;
+        font-size: 0.9rem;
+        line-height: 1.4;
         color: #bbf7d0;
         background: #07140d;
         border-radius: 10px;
-        padding: 0.4rem 0.55rem;
+        padding: 0.45rem 0.6rem;
       }
       .vl-outbar.is-err { background: #2a1215; color: #fecaca; }
       .vl-scroll { overflow: auto; padding: 0.7rem; flex: 1; }
@@ -1415,11 +1414,11 @@ print(ages["Ada"])
       .vl-ptr { font-size: 0.68rem; font-weight: 800; animation: vl-bob 0.9s ease-in-out infinite; }
       .vl-vars { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.55rem; }
       .vl-var {
-        min-width: 74px;
-        border-radius: 12px;
-        border: 1px solid rgba(124,196,255,.35);
+        min-width: 92px;
+        border-radius: 14px;
+        border: 1px solid rgba(124,196,255,.45);
         background: #101820;
-        padding: 0.35rem 0.55rem 0.5rem;
+        padding: 0.55rem 0.8rem 0.7rem;
         text-align: center;
         box-shadow: 0 8px 18px rgba(0,0,0,.22);
       }
@@ -1699,7 +1698,7 @@ print(ages["Ada"])
         font-weight: 800;
       }
       .vl-gutter div.is-bad { color: #fff; background: #f87171; }
-      .vl-stage { position: relative; min-height: 320px; }
+      .vl-codebox .vl-stage { position: relative; min-height: 220px; height: 100%; }
       .vl-back {
         position: absolute;
         inset: 0;
@@ -2460,17 +2459,13 @@ print(ages["Ada"])
       </div>
     ` : "";
     box.innerHTML = `
-      <div class="vl-studio-top">
-        <p class="vl-kicker">Type Python, then run</p>
-        ${modes}
-      </div>
-      ${intro}
-      <div class="vl-line" data-line>Press Run, or just change the code. The yellow line is where Python is right now.</div>
+      ${modes}
+      ${lessonProblem && meta && !state.free ? intro : ""}
       <div class="vl-codebox">
         <div class="vl-gutter" data-gutter></div>
         <div class="vl-stage">
           <div class="vl-back" data-back></div>
-          <textarea class="vl-editor" wrap="off" spellcheck="false" aria-label="Your Python code" placeholder="Type Python here. Suggestions appear as you type." autocomplete="off"></textarea>
+          <textarea class="vl-editor" wrap="off" spellcheck="false" aria-label="Your Python code" placeholder="" autocomplete="off"></textarea>
         </div>
       </div>
       <div class="vl-editor-actions">
@@ -2490,12 +2485,14 @@ print(ages["Ada"])
     ui.gutter = box.querySelector("[data-gutter]");
     ui.back = box.querySelector("[data-back]");
     const fallback = state.free || !lessonProblem ? FREE_CODE : lessonProblem.starter;
+    const oldStarter = "# Change anything, then press Run.\n" + FREE_CODE;
     const seeded = state.seedCode != null;
     const seed = state.seedCode;
     state.seedCode = null;
     const useBlank = !!state.blank;
     state.blank = false;
-    ui.editor.value = useBlank ? "" : seeded ? seed : (typeof saved === "string" ? saved : fallback);
+    const stored = typeof saved === "string" && saved !== oldStarter ? saved : fallback;
+    ui.editor.value = useBlank ? "" : seeded ? seed : stored;
     ui.line = box.querySelector("[data-line]");
     ui.grade = box.querySelector("[data-grade-msg]");
     ui.tests = box.querySelector("[data-tests]");
@@ -2759,7 +2756,7 @@ print(ages["Ada"])
     state.you.note = "You changed the code. The path is being drawn from these new lines.";
     if (ui.grade) {
       ui.grade.className = "vl-grade";
-      ui.grade.textContent = "The picture follows whatever you type.";
+      ui.grade.textContent = "";
     }
     paintSide("you");
     refreshTimer = setTimeout(() => {
@@ -2849,13 +2846,10 @@ print(ages["Ada"])
         paintNavMarks();
         paintTests();
       } else if (ui.grade) {
-        if (hasSolve && !hasTopLevelWork(source)) {
-          ui.grade.textContent = "That function is saved. Add a line that calls it, such as print(solve([1, 2, 3])), to watch the steps inside.";
-        } else if (lesson) {
-          ui.grade.textContent = "Drawing your own program. Add a function named solve when you want the examples checked.";
-        } else {
-          ui.grade.textContent = "Drawing your program, one line at a time.";
-        }
+        ui.grade.className = "vl-grade";
+        ui.grade.textContent = hasSolve && !hasTopLevelWork(source)
+          ? "Add a line that calls solve, such as print(solve([1, 2, 3]))."
+          : "";
       }
       if (!traceSelected) return;
       state.you = emptyTrace();
@@ -3286,9 +3280,11 @@ print(ages["Ada"])
     const availH = Math.max(32, fit.clientHeight - parseFloat(box.paddingTop) - parseFloat(box.paddingBottom) - 8);
     const needW = Math.max(card.scrollWidth, card.offsetWidth, 1);
     const needH = Math.max(card.scrollHeight, card.offsetHeight, 1);
-    let scale = Math.min(availW / needW, availH / needH, 1);
+    let scale = Math.min(availW / needW, availH / needH);
+    if (!isFinite(scale) || scale <= 0) scale = 1;
+    scale = Math.min(scale, 2.4);
     card.style.transformOrigin = "center center";
-    card.style.transform = scale < 0.995 ? "scale(" + scale + ")" : "";
+    card.style.transform = Math.abs(scale - 1) > 0.04 ? "scale(" + scale + ")" : "";
     const bounds = picture.getBoundingClientRect();
     const boxes = ".vl-var, .vl-cell, .vl-node, .vl-queue i, .vl-stack i, .vl-set i, .vl-table, .vl-grid, .vl-caption, .vl-key, .vl-cursor, .vl-graph circle, .vl-graph text";
     for (let guard = 0; guard < 8; guard += 1) {
@@ -3314,8 +3310,10 @@ print(ages["Ada"])
       return bar;
     }
     const printed = stdoutAt(trace.stdout, frame.out_n).trim();
-    const lines = printed ? printed.split("\n").slice(-2) : [];
-    let text = lines.join("\n");
+    const lines = printed ? printed.split("\n") : [];
+    const shown = lines.length > 14 ? lines.slice(-14) : lines;
+    let text = shown.join("\n");
+    if (lines.length > 14) text = "…\n" + text;
     const quiet = trace.script && frame.final && (!frame.ret || frame.ret.t === "none");
     if (!quiet && frame.final) text = (text ? text + "\n" : "") + "answer " + pyFmt(frame.ret);
     if (failed) text = (text ? text + "\n" : "") + trace.error;
