@@ -1,2 +1,8 @@
 User-agent: *
 Allow: /
+
+# Do not invite crawlers to tool/editor paths if undesired — keep public courses indexable
+Allow: /index.html
+Allow: /interview-prep-complete.html
+Allow: /dsa-master-course.html
+Allow: /Foundations_of_Artificial_Intelligence.html

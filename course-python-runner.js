@@ -463,8 +463,15 @@ print(add(2, 3))</textarea>
       btn.title = "Open in Python editor";
 
       btn.addEventListener("click", (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        editor.openPanel(text);
+        try { sessionStorage.setItem("vl-seed-code", text); } catch (err) { /* private mode */ }
+        const here = /dsa-master-course\.html$/i.test(location.pathname);
+        if (here && typeof window.__vlOpenEditor === "function") {
+          window.__vlOpenEditor(text);
+          return;
+        }
+        location.href = "dsa-master-course.html#vl/playground";
       });
 
       pre.appendChild(btn);

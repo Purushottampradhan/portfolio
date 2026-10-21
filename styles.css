@@ -968,6 +968,12 @@ section {
   }
 }
 
+@media (min-width: 1024px) {
+  .course-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 .course-card {
   display: flex;
   flex-direction: column;
