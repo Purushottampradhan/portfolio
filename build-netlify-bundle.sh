@@ -24,6 +24,7 @@ PUBLIC_FILES=(
   dsa-master-course.html
   Foundations_of_Artificial_Intelligence.html
   python-editor.html
+  code-editor.html
   course-python-runner.css
   course-python-runner.js
   course-theme.css

@@ -5,4 +5,5 @@ Allow: /
 Allow: /index.html
 Allow: /interview-prep-complete.html
 Allow: /dsa-master-course.html
+Allow: /code-editor.html
 Allow: /Foundations_of_Artificial_Intelligence.html

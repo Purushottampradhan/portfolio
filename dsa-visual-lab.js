@@ -6,7 +6,7 @@
   "use strict";
 
   if (typeof module !== "undefined" && module.exports && typeof document === "undefined") {
-    module.exports = { changedPairs, narration, sourceLine, nextFact, whyLine, errorHint, stdoutAt, clampIndex, layoutKind, stepStats, deriveEvents, describeEvents, trackListIds, motionMs, loopRoles, itemCursor };
+    module.exports = { changedPairs, narration, sourceLine, nextFact, whyLine, errorHint, stdoutAt, clampIndex, layoutKind, stepStats, deriveEvents, describeEvents, trackListIds, motionMs, loopRoles, itemCursor, subscripts, walkFor, indexSpan };
     return;
   }
 
@@ -34,8 +34,6 @@
     recursion: "Every call gets its own memory frame. The frames stack up, then collapse as each call returns.",
     flow: "Follow the order of steps. Memory on the right of each step is what the function has stored so far.",
   };
-
-  const VALUE_NAMES = new Set(["x", "y", "val", "cur", "key", "ch", "c", "item", "ans"]);
 
   const POINTER_NAMES = new Set([
     "i", "j", "k", "ii", "jj", "left", "right", "mid", "lo", "hi", "low", "high",
@@ -893,11 +891,28 @@ print(ages["Ada"])
         font-family: var(--font-sans, "DM Sans", system-ui, sans-serif);
         cursor: pointer;
       }
+      .vl-launch-bar {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex: none;
+        z-index: 2;
+      }
+      body.course-page > header {
+        justify-content: flex-start;
+        gap: 0.6rem;
+        padding: 0 1rem;
+      }
+      body.course-page > header h1 {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
       .vl-launch {
-        position: absolute;
-        right: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
+        position: static;
+        transform: none;
         border: 1px solid rgba(61, 156, 253, 0.45);
         background: rgba(61, 156, 253, 0.16);
         color: #e8eef4;
@@ -905,6 +920,7 @@ print(ages["Ada"])
         padding: 0.35rem 0.75rem;
         font-size: 0.78rem;
         font-weight: 700;
+        white-space: nowrap;
       }
       .vl-launch:hover { background: #3d9cfd; color: #0f1419; }
       .vl-nav-btn {
@@ -1463,6 +1479,59 @@ print(ages["Ada"])
       .vl-stack i.is-top { border-color: #3d9cfd; }
       .vl-queue { display: flex; gap: 0.35rem; align-items: flex-end; justify-content: center; flex-wrap: wrap; }
       .vl-queue i.is-front { border-color: #4ade80; }
+      .vl-pile { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; }
+      .vl-ends {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        width: 100%;
+        min-width: 210px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+      }
+      .vl-ends b.top, .vl-ends b.rear { color: #7cc4ff; }
+      .vl-ends b.front { color: #4ade80; }
+      .vl-ends span { color: #8fa3b8; font-weight: 650; }
+      .vl-pile.is-stack .vl-stack {
+        min-width: 150px;
+        min-height: 86px;
+        padding: 0.5rem 0.75rem 0.25rem;
+        border-left: 3px solid rgba(124,196,255,.75);
+        border-right: 3px solid rgba(124,196,255,.75);
+        border-bottom: 10px solid #3d9cfd;
+        border-radius: 0 0 14px 14px;
+        background: linear-gradient(#0c141c, #15202b);
+      }
+      .vl-pile .vl-stack i, .vl-pile .vl-queue i {
+        min-width: 132px;
+        min-height: 52px;
+        border-radius: 12px;
+        font-size: 1.05rem;
+        box-shadow: 0 5px 0 rgba(0,0,0,.28);
+      }
+      .vl-pile .vl-stack i.is-top {
+        background: #16324d;
+        border-color: #7cc4ff;
+        color: #f4fbff;
+      }
+      .vl-pile.is-queue .vl-queue {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding: 0.75rem 0.8rem 0.6rem;
+        border-radius: 16px;
+        background: linear-gradient(90deg, rgba(74,222,128,.2), rgba(16,24,32,.15) 22%, rgba(16,24,32,.15) 78%, rgba(124,196,255,.22));
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+      }
+      .vl-pile .vl-queue i.is-front { background: #123222; border-color: #4ade80; }
+      .vl-pile .vl-queue i.is-rear { background: #122433; border-color: #7cc4ff; }
+      .vl-pile i.is-empty {
+        border-style: dashed;
+        color: #8fa3b8;
+        box-shadow: none;
+        font-weight: 650;
+      }
       .vl-links { display: flex; flex-wrap: wrap; gap: 0.2rem; align-items: center; }
       .vl-node {
         width: 54px;
@@ -1737,6 +1806,17 @@ print(ages["Ada"])
         padding: 0.62rem 1rem;
         border-radius: 12px;
       }
+      .vl-btn:disabled { opacity: 0.55; cursor: progress; }
+      .vl-lang {
+        flex: none;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        color: #9bd0ff;
+        border: 1px solid rgba(124,196,255,.45);
+        border-radius: 999px;
+        padding: 0.18rem 0.55rem;
+      }
       .vl-why { margin: 0 0 0.7rem; color: #b7c5d3; }
       .vl-why summary { cursor: pointer; font-weight: 800; color: #e8eef4; }
       .vl-lead { font-size: 1.02rem; line-height: 1.45; }
@@ -1751,7 +1831,7 @@ print(ages["Ada"])
         .vl-live { grid-template-columns: minmax(0, 1fr) minmax(132px, 0.42fr); }
       }
       @media (max-width: 768px) {
-        .vl-launch { display: none; }
+        .vl-launch-bar { position: static; transform: none; }
         .vl-banner { flex-direction: column; align-items: flex-start; }
       }
       @media (prefers-reduced-motion: reduce) {
@@ -1782,6 +1862,8 @@ print(ages["Ada"])
         <button type="button" class="vl-btn" data-act="reveal">Show solution code</button>
         <button type="button" class="vl-btn ghost" data-act="focus" title="Hide the lesson text and keep the editor and Watch panel">Focus</button>
         <button type="button" class="vl-btn ghost" data-act="theme" title="Switch the lab between dark and light">Theme</button>
+        <span class="vl-lang" data-lang hidden>Python 3</span>
+        <button type="button" class="vl-btn ghost" data-act="home" hidden>Portfolio</button>
         <button type="button" class="vl-btn ghost" data-act="close">Close</button>
       </div>
       <div class="vl-pane-bar">
@@ -1843,6 +1925,7 @@ print(ages["Ada"])
   function onRootClick(event) {
     const act = event.target.closest("[data-act]")?.dataset.act;
     if (act === "close") closeLab();
+    if (act === "home") leaveEditor();
     if (act === "back") showMap();
     if (act === "lesson") openLesson();
     if (act === "reveal") toggleReveal();
@@ -2008,11 +2091,12 @@ print(ages["Ada"])
     state.you = emptyTrace();
     state.sol = emptyTrace();
     state.tests = [];
-    if (location.hash !== "#vl/playground") history.pushState(null, "", "#vl/playground");
-    ui.title.textContent = "My own code";
-    ui.back.hidden = false;
+    if (!editorOnly() && location.hash !== "#vl/playground") history.pushState(null, "", "#vl/playground");
+    ui.title.textContent = editorOnly() ? "Python editor" : "My own code";
+    ui.back.hidden = editorOnly();
     ui.lesson.hidden = true;
     ui.reveal.hidden = true;
+    paintEditorHome();
     ui.root.querySelector(".vl-pane-bar").hidden = false;
     state.lens = "you";
     paintWorkspace();
@@ -2407,7 +2491,7 @@ print(ages["Ada"])
     ui.body.innerHTML = `
       <div class="vl-work${state.free ? " is-free" : ""}">
         <section class="vl-col vl-problem is-pane" data-col="problem">
-          <div class="vl-col-h">Write code</div>
+          <div class="vl-col-h">${editorOnly() ? "Python" : "Write code"}</div>
           <div class="vl-scroll vl-problem" data-problem></div>
         </section>
         <div class="vl-split" data-split title="Drag to resize"></div>
@@ -2465,11 +2549,11 @@ print(ages["Ada"])
         <div class="vl-gutter" data-gutter></div>
         <div class="vl-stage">
           <div class="vl-back" data-back></div>
-          <textarea class="vl-editor" wrap="off" spellcheck="false" aria-label="Your Python code" placeholder="" autocomplete="off"></textarea>
+          <textarea class="vl-editor" wrap="off" spellcheck="false" aria-label="Your Python code" placeholder="${editorOnly() ? "Write Python here" : ""}" autocomplete="off"></textarea>
         </div>
       </div>
       <div class="vl-editor-actions">
-        <button type="button" class="vl-btn primary vl-run" data-run title="Run (Ctrl or Cmd + Enter)">Run and watch</button>
+        <button type="button" class="vl-btn primary vl-run" data-run title="Run Python (Ctrl or Cmd + Enter)">${editorOnly() ? "Run Python" : "Run and watch"}</button>
         ${lessonProblem && !state.free ? '<button type="button" class="vl-btn" data-grade>Check examples</button>' : ""}
         <button type="button" class="vl-btn ghost" data-reset>Reset</button>
         <button type="button" class="vl-btn ghost" data-copy>Copy</button>
@@ -2812,11 +2896,18 @@ print(ages["Ada"])
     });
     const token = ++state.runToken;
     const source = ui.editor.value;
+    if (editorOnly() && !source.trim()) {
+      ui.grade.className = "vl-grade";
+      ui.grade.textContent = "Write Python, then run it.";
+      return;
+    }
     const hasSolve = /(^|\n)\s*def\s+solve\s*\(/.test(source);
     const ownProgram = state.free || !lesson || !hasSolve || hasTopLevelWork(source);
     ui.grade.className = "vl-grade";
-    ui.grade.textContent = "Running your code…";
+    ui.grade.textContent = "Running Python…";
     setPane("you");
+    const runBtn = ui.root.querySelector("[data-run]");
+    if (runBtn) runBtn.disabled = true;
     try {
       await loadPy();
       if (token !== state.runToken) return;
@@ -2867,6 +2958,8 @@ print(ages["Ada"])
       if (token !== state.runToken) return;
       ui.grade.className = "vl-grade bad";
       ui.grade.textContent = err.message || String(err);
+    } finally {
+      if (token === state.runToken && runBtn) runBtn.disabled = false;
     }
   }
 
@@ -3461,7 +3554,23 @@ print(ages["Ada"])
       const tip = localPoint(stageRect, cells[aim].getBoundingClientRect(), scale);
       cursor.style.left = tip.x + "px";
       cursor.style.top = (tip.y - 28) + "px";
-      svg.appendChild(svgEl("line", { x1: tip.x, y1: tip.y - 14, x2: tip.x, y2: tip.y + 2, class: "vl-stem" }));
+      const picture = stage.closest(".vl-picture");
+      if (picture && scale) {
+        const pad = 8;
+        const bounds = picture.getBoundingClientRect();
+        const box = cursor.getBoundingClientRect();
+        let dx = 0;
+        let dy = 0;
+        if (box.top < bounds.top + pad) dy = (bounds.top + pad - box.top) / scale;
+        if (box.left < bounds.left + pad) dx = (bounds.left + pad - box.left) / scale;
+        if (box.right > bounds.right - pad) dx = (bounds.right - pad - box.right) / scale;
+        if (dx || dy) {
+          cursor.style.left = (tip.x + dx) + "px";
+          cursor.style.top = (tip.y - 28 + dy) + "px";
+        }
+      }
+      const stemTop = parseFloat(cursor.style.top) + 20;
+      svg.appendChild(svgEl("line", { x1: tip.x, y1: Math.min(stemTop, tip.y), x2: tip.x, y2: tip.y + 2, class: "vl-stem" }));
     });
     root.querySelectorAll(".vl-linkstage, .vl-treestage").forEach((stage) => {
       const svg = stage.querySelector(".vl-wires");
@@ -3785,7 +3894,7 @@ print(ages["Ada"])
     if (renderPile(host, locals, "queue", false, used, events)) structure = true;
     if (!structure && renderTree(host, frame)) structure = true;
     if (!structure && renderLinked(host, frame)) structure = true;
-    if (!structure && renderMatrix(host, locals, prevLocals, scratch)) structure = true;
+    if (renderMatrix(host, locals, prevLocals, scratch, used, sourceLine(source, frame.line))) structure = true;
     if (renderQueens(host, locals, used)) structure = true;
     let drawLocals = locals;
     if (!Object.keys(locals).some((name) => isScalarList(locals[name]) || stringIsIndexed(locals[name], locals))) {
@@ -3847,19 +3956,48 @@ print(ages["Ada"])
     return out;
   }
 
-  function pointersFor(listNode, locals, roles) {
+  function pointersFor(listNode, locals, roles, line, listName) {
     const map = new Map();
     if (!listNode) return map;
+    const add = (name, index) => {
+      if (index < 0 || index >= listNode.v.length) return;
+      if (!map.has(index)) map.set(index, []);
+      if (map.get(index).indexOf(name) < 0) map.get(index).push(name);
+    };
     Object.keys(locals).forEach((name) => {
       const value = locals[name];
       if (!POINTER_NAMES.has(name) || !value || value.t !== "int") return;
       if (roles && roles[name] && roles[name].mode === "item") return;
-      const index = value.v;
-      if (index < 0 || index >= listNode.v.length) return;
-      if (!map.has(index)) map.set(index, []);
-      map.get(index).push(name);
+      add(name, value.v);
+    });
+    subscripts(line, listName).forEach((part) => {
+      if (part.op) return;
+      const value = locals[part.name];
+      if (!value || value.t !== "int") return;
+      if (roles && roles[part.name] && roles[part.name].mode === "item") return;
+      add(part.name, value.v);
     });
     return map;
+  }
+
+  function indexSpan(pointerMap, length, cursor) {
+    const lowNames = { left: 1, lo: 1, low: 1, start: 1, l: 1 };
+    const highNames = { right: 1, hi: 1, high: 1, end: 1, r: 1 };
+    let lo = null;
+    let hi = null;
+    pointerMap.forEach((names, index) => {
+      names.forEach((name) => {
+        const bare = String(name).split(/\s*[+-]/)[0];
+        if (lowNames[bare]) lo = lo == null ? index : Math.min(lo, index);
+        if (highNames[bare]) hi = hi == null ? index : Math.max(hi, index);
+      });
+    });
+    if (lo != null && hi != null && lo <= hi && hi < length) return { lo: lo, hi: hi };
+    let count = 0;
+    pointerMap.forEach((names) => { if (names.length) count += 1; });
+    if (count >= 2) return null;
+    if (cursor >= 0 && cursor < length) return { lo: cursor, hi: length - 1 };
+    return null;
   }
 
   function eventsFor(events, name) {
@@ -3894,11 +4032,35 @@ print(ages["Ada"])
       label.textContent = name;
       host.appendChild(label);
       const walk = walkFor(roles, name, locals, scan);
-      if (node.t === "str") renderStringCells(host, name, node, prevLocals[name], locals);
-      else renderCells(host, node, prevLocals[name], locals, eventsFor(events, name), activeIds[name] || [], walk, roles);
+      const frame = scan && scan.frames ? scan.frames[scan.index || 0] : null;
+      const line = frame ? sourceLine(scan.source, frame.line) : "";
+      if (used) {
+        const limit = node.t === "str" ? node.v.length : node.v.length;
+        Object.keys(locals).forEach((key) => {
+          if (!locals[key] || locals[key].t !== "int") return;
+          const onLine = subscripts(line, name).some((part) => part.name === key);
+          if (!POINTER_NAMES.has(key) && !onLine) return;
+          const index = locals[key].v;
+          if (index >= 0 && index < limit) used.add(key);
+        });
+      }
+      const partners = partnerHits(line, name, locals, node.t === "str" ? node.v.length : node.v.length);
+      if (node.t === "str") renderStringCells(host, name, node, prevLocals[name], locals, eventsFor(events, name), activeIds[name] || [], walk, roles, partners, line);
+      else renderCells(host, node, prevLocals[name], locals, eventsFor(events, name), activeIds[name] || [], walk, roles, partners, line, name);
       if (walk && walk.index >= 0) host.appendChild(scanLine(walk, locals, node));
     });
     return true;
+  }
+
+  function subscripts(line, listName) {
+    const found = [];
+    if (!line || !listName) return found;
+    const pattern = new RegExp("\\b" + listName + "\\s*\\[\\s*([A-Za-z_]\\w*)\\s*(?:([+-])\\s*(\\d+))?\\s*\\]", "g");
+    let match;
+    while ((match = pattern.exec(line))) {
+      found.push({ name: match[1], op: match[2] || "", delta: match[3] ? Number(match[3]) : 0 });
+    }
+    return found;
   }
 
   function walkFor(roles, listName, locals, scan) {
@@ -3907,45 +4069,66 @@ print(ages["Ada"])
       const index = itemCursor(scan.frames, scan.index || 0, itemName);
       if (index >= 0) return { name: itemName, index };
     }
-    const indexName = Object.keys(roles).find((key) => roles[key].mode === "index" && locals[key] && locals[key].t === "int");
-    if (!indexName) return null;
+    const frame = scan && scan.frames ? scan.frames[scan.index || 0] : null;
+    const line = frame ? sourceLine(scan.source, frame.line) : "";
+    const direct = subscripts(line, listName).filter((part) => !part.op && locals[part.name] && locals[part.name].t === "int");
+    if (direct.length) {
+      const name = direct[direct.length - 1].name;
+      return { name, index: locals[name].v };
+    }
+    const mentioned = Object.keys(roles).filter((key) => roles[key] && roles[key].mode === "index" && locals[key] && locals[key].t === "int" && new RegExp("\\b" + key + "\\b").test(line));
+    if (!mentioned.length) return null;
+    const indexName = mentioned[mentioned.length - 1];
     return { name: indexName, index: locals[indexName].v };
+  }
+
+  function partnerHits(line, listName, locals, length) {
+    const hits = new Map();
+    subscripts(line, listName).forEach((part) => {
+      if (!part.op) return;
+      const base = locals[part.name];
+      if (!base || base.t !== "int") return;
+      const index = part.op === "+" ? base.v + part.delta : base.v - part.delta;
+      if (index < 0 || index >= length) return;
+      const label = part.name + part.op + part.delta;
+      if (!hits.has(index)) hits.set(index, []);
+      if (hits.get(index).indexOf(label) < 0) hits.get(index).push(label);
+    });
+    return hits;
   }
 
   function scanLine(walk, locals, node) {
     const line = document.createElement("p");
     line.className = "vl-scanline";
-    const item = node.v[walk.index];
+    const item = node.t === "str" ? { t: "str", v: node.v.charAt(walk.index) } : node.v[walk.index];
     const shown = item ? pyFmt(item).replace(/^'|'$/g, "") : "";
-    const targets = Object.keys(locals).filter((key) => key !== walk.name && isScalar(locals[key]) && locals[key].t !== "none" && locals[key].t !== "bool");
-    const target = targets.find((key) => JSON.stringify(locals[key]) === JSON.stringify(item)) || targets[0];
     let text = walk.name + " is looking at box " + walk.index + (shown ? " (" + shown + ")" : "");
-    if (target && locals[target]) {
-      const same = item && JSON.stringify(locals[target]) === JSON.stringify(item);
-      text += ". " + target + " is " + pyFmt(locals[target]).replace(/^'|'$/g, "") + (same ? ". They match." : ".");
-    }
+    const match = Object.keys(locals).find((key) => key !== walk.name && isScalar(locals[key]) && locals[key].t !== "none" && locals[key].t !== "bool" && item && JSON.stringify(locals[key]) === JSON.stringify(item));
+    if (match) text += ". " + match + " is " + pyFmt(locals[match]).replace(/^'|'$/g, "") + ". They match.";
     line.textContent = text;
     return line;
   }
 
-  function renderCells(host, node, prevNode, locals, ops, vids, walk, roles) {
+  function renderCells(host, node, prevNode, locals, ops, vids, walk, roles, partners, line, listName) {
     const wrap = document.createElement("div");
     wrap.className = "vl-cells";
     const changed = changedSet(prevNode, node);
-    const pointers = pointersFor(node, locals, roles);
-    const reads = valueHits(node, locals, roles);
+    const pointers = pointersFor(node, locals, roles, line, listName);
+    const beside = partners || new Map();
     const marked = ops || [];
     const identities = vids || [];
     const cursor = walk && walk.index >= 0 && walk.index < node.v.length ? walk.index : -1;
+    const span = indexSpan(pointers, node.v.length, cursor);
     node.v.forEach((item, index) => {
       const cell = document.createElement("div");
-      const reading = reads.get(index) || [];
+      const neighbor = beside.get(index) || [];
       const scanning = index === cursor;
       const found = scanning && walk && Object.keys(locals).some((key) => key !== walk.name && isScalar(locals[key]) && JSON.stringify(locals[key]) === JSON.stringify(item));
+      const outside = span && !neighbor.length && (index < span.lo || index > span.hi);
       cell.className = "vl-cell"
         + (changed.has(index) ? " is-changed" : "")
-        + (reading.length ? " is-read" : "")
-        + (cursor >= 0 && index < cursor ? " is-seen" : "")
+        + (neighbor.length ? " is-read" : "")
+        + (outside ? " is-seen" : "")
         + (scanning ? " is-scan" : "")
         + (found ? " is-found" : "");
       if (identities[index]) cell.dataset.vid = identities[index];
@@ -3959,7 +4142,7 @@ print(ages["Ada"])
       val.textContent = pyFmt(item).replace(/^'|'$/g, "");
       cell.appendChild(idx);
       cell.appendChild(val);
-      const ptrs = (pointers.get(index) || []).concat(reading);
+      const ptrs = (pointers.get(index) || []).concat(neighbor);
       if (ptrs.length) {
         const row = document.createElement("div");
         row.className = "vl-ptrs";
@@ -3996,27 +4179,6 @@ print(ages["Ada"])
     host.appendChild(board);
   }
 
-  function valueHits(node, locals, roles) {
-    const hits = new Map();
-    if (!node || !node.v) return hits;
-    Object.keys(locals).forEach((name) => {
-      if (!VALUE_NAMES.has(name) || POINTER_NAMES.has(name)) return;
-      if (roles && roles[name] && roles[name].mode === "item") return;
-      const value = locals[name];
-      if (!isScalar(value) || value.t === "none") return;
-      const matches = [];
-      node.v.forEach((item, index) => {
-        if (JSON.stringify(item) === JSON.stringify(value)) matches.push(index);
-      });
-      if (matches.length === 1) {
-        const index = matches[0];
-        if (!hits.has(index)) hits.set(index, []);
-        hits.get(index).push(name);
-      }
-    });
-    return hits;
-  }
-
   function renderScalarCards(host, locals, prevLocals, used) {
     const wrap = document.createElement("div");
     wrap.className = "vl-vars";
@@ -4051,9 +4213,9 @@ print(ages["Ada"])
     const node = locals[name];
     const changed = changedSet(prevLocals[name], node);
     const swaps = eventsFor(events, name).filter((event) => event.type === "swap");
-    const caption = document.createElement("p");
-    caption.className = "vl-intro";
-    caption.textContent = name + " · parent sits above its two children";
+    const caption = document.createElement("div");
+    caption.className = "vl-caption";
+    caption.textContent = name;
     host.appendChild(caption);
     const tree = document.createElement("div");
     tree.className = "vl-heap";
@@ -4082,12 +4244,12 @@ print(ages["Ada"])
     return true;
   }
 
-  function renderStringCells(host, name, node, prevNode, locals) {
+  function renderStringCells(host, name, node, prevNode, locals, ops, vids, walk, roles, partners, line) {
     const fake = { t: "list", v: node.v.split("").map((ch) => ({ t: "str", v: ch })) };
     const prev = prevNode && prevNode.t === "str"
       ? { t: "list", v: prevNode.v.split("").map((ch) => ({ t: "str", v: ch })) }
       : null;
-    renderCells(host, fake, prev, locals);
+    renderCells(host, fake, prev, locals, ops, vids, walk, roles, partners, line, name);
     const wrap = host.lastElementChild;
     if (wrap) wrap.dataset.vid = "var-" + name;
   }
@@ -4174,7 +4336,6 @@ print(ages["Ada"])
       let body = null;
       if (node.t === "dict" && !isLink(node) && !isTree(node)) body = dictTable(node, prevLocals[name]);
       else if (node.t === "set") body = setCircles(node);
-      else if (isMatrix(node)) body = matrixTable(node, prevLocals[name], locals);
       if (!body) return;
       if (used) used.add(name);
       const caption = document.createElement("div");
@@ -4185,9 +4346,30 @@ print(ages["Ada"])
     });
   }
 
-  function matrixTable(node, prev, locals) {
+  function matrixCells(line, listName, locals) {
+    const hits = [];
+    if (!line || !listName) return hits;
+    const pattern = new RegExp("\\b" + listName + "\\s*\\[\\s*([A-Za-z_]\\w*)\\s*(?:([+-])\\s*(\\d+))?\\s*\\]\\s*\\[\\s*([A-Za-z_]\\w*)\\s*(?:([+-])\\s*(\\d+))?\\s*\\]", "g");
+    const at = (name, op, delta) => {
+      const base = locals[name];
+      if (!base || base.t !== "int") return null;
+      if (op === "+") return base.v + delta;
+      if (op === "-") return base.v - delta;
+      return base.v;
+    };
+    let match;
+    while ((match = pattern.exec(line))) {
+      const row = at(match[1], match[2] || "", match[3] ? Number(match[3]) : 0);
+      const col = at(match[4], match[5] || "", match[6] ? Number(match[6]) : 0);
+      if (row != null && col != null) hits.push([row, col]);
+    }
+    return hits;
+  }
+
+  function matrixTable(node, prev, locals, line, listName) {
     const table = document.createElement("table");
     table.className = "vl-grid";
+    const hits = matrixCells(line, listName, locals);
     const rowIndex = locals.i && locals.i.t === "int" ? locals.i.v : locals.row && locals.row.t === "int" ? locals.row.v : null;
     const colIndex = locals.j && locals.j.t === "int" ? locals.j.v : locals.col && locals.col.t === "int" ? locals.col.v : null;
     const previous = isMatrix(prev) ? prev : null;
@@ -4198,7 +4380,8 @@ print(ages["Ada"])
         td.textContent = pyFmt(cell);
         const before = previous && previous.v[r] && previous.v[r].v[c];
         if (!before || JSON.stringify(before) !== JSON.stringify(cell)) td.classList.add("is-changed");
-        if (r === rowIndex && c === colIndex) td.classList.add("is-here");
+        const aimed = hits.length ? hits.some((pair) => pair[0] === r && pair[1] === c) : r === rowIndex && c === colIndex;
+        if (aimed) td.classList.add("is-here");
         tr.appendChild(td);
       });
       table.appendChild(tr);
@@ -4229,10 +4412,18 @@ print(ages["Ada"])
 
   function renderOnePile(host, locals, name, stackMode, used, events) {
     if (used) used.add(name);
+    const pile = document.createElement("div");
+    pile.className = "vl-pile " + (stackMode ? "is-stack" : "is-queue");
     const cap = document.createElement("div");
     cap.className = "vl-caption";
     cap.textContent = name;
-    host.appendChild(cap);
+    pile.appendChild(cap);
+    const ends = document.createElement("div");
+    ends.className = "vl-ends";
+    ends.innerHTML = stackMode
+      ? "<b class=\"top\">TOP</b><span>push and pop here</span>"
+      : "<b class=\"front\">FRONT</b><span>leaves first</span><b class=\"rear\">REAR</b>";
+    pile.appendChild(ends);
     const wrap = document.createElement("div");
     wrap.className = stackMode ? "vl-stack" : "vl-queue";
     const items = locals[name].v;
@@ -4248,12 +4439,14 @@ print(ages["Ada"])
       el.textContent = compact(item);
       wrap.appendChild(el);
     });
-    if (!items.length) wrap.textContent = name + " is empty";
-    host.appendChild(wrap);
-    const note = document.createElement("p");
-    note.className = "vl-intro";
-    note.textContent = stackMode ? "Top of the stack is the highlighted box." : "Front of the queue is the green box. New items stand at the other end.";
-    host.appendChild(note);
+    if (!items.length) {
+      const empty = document.createElement("i");
+      empty.className = "is-empty";
+      empty.textContent = "empty";
+      wrap.appendChild(empty);
+    }
+    pile.appendChild(wrap);
+    host.appendChild(pile);
     return true;
   }
 
@@ -4276,12 +4469,26 @@ print(ages["Ada"])
     return true;
   }
 
-  function renderMatrix(host, locals, prevLocals, problem) {
-    const names = ["dp", "grid", "mat", "matrix", "board", "table"].concat(problem.focus || []);
-    const name = names.find((item) => isMatrix(locals[item]));
-    if (!name) return false;
-    const node = locals[name];
-    host.appendChild(matrixTable(node, prevLocals[name], locals));
+  function renderMatrix(host, locals, prevLocals, problem, used, line) {
+    const names = ["dp", "grid", "mat", "matrix", "board", "table"].concat((problem && problem.focus) || []);
+    const picked = [];
+    names.forEach((item) => {
+      if (picked.indexOf(item) >= 0 || !isMatrix(locals[item])) return;
+      picked.push(item);
+    });
+    if (!picked.length) {
+      const any = Object.keys(locals).find((item) => isMatrix(locals[item]));
+      if (any) picked.push(any);
+    }
+    if (!picked.length) return false;
+    picked.slice(0, 2).forEach((name) => {
+      if (used) used.add(name);
+      const caption = document.createElement("div");
+      caption.className = "vl-caption";
+      caption.textContent = name;
+      host.appendChild(caption);
+      host.appendChild(matrixTable(locals[name], prevLocals[name], locals, line, name));
+    });
     return true;
   }
 
@@ -4354,17 +4561,30 @@ print(ages["Ada"])
     return keys.has("val") && (keys.has("left") || keys.has("right"));
   }
 
+  function linkHeads(locals, byId) {
+    const links = Object.keys(locals).filter((name) => isLink(deref(locals[name], byId)));
+    const childIds = new Set();
+    links.forEach((name) => {
+      const node = deref(locals[name], byId);
+      const next = node && deref(dictGet(node, "next"), byId);
+      if (next && next.id) childIds.add(next.id);
+    });
+    const heads = links.filter((name) => {
+      const node = deref(locals[name], byId);
+      return node && !childIds.has(node.id);
+    });
+    const preferred = ["head", "list1", "list2", "first", "second"].filter((name) => heads.indexOf(name) >= 0);
+    const chosen = preferred.length ? preferred : heads;
+    return (chosen.length ? chosen : links).slice(0, 2);
+  }
+
   function renderLinked(host, source) {
     const { locals, byId } = nodeIndex(source);
-    const names = ["head", "list1", "list2", "first", "second", "a", "b", "node"].filter((name) => isLink(deref(locals[name], byId)));
-    if (!names.length) {
-      const any = Object.keys(locals).find((name) => isLink(deref(locals[name], byId)));
-      if (any) names.push(any);
-    }
+    const names = linkHeads(locals, byId);
     if (!names.length) return false;
     names.slice(0, 2).forEach((name) => {
-      const caption = document.createElement("p");
-      caption.className = "vl-intro";
+      const caption = document.createElement("div");
+      caption.className = "vl-caption";
       caption.textContent = name;
       host.appendChild(caption);
       const stage = document.createElement("div");
@@ -4440,7 +4660,10 @@ print(ages["Ada"])
     const box = document.createElement("div");
     box.className = "vl-node";
     if (node.id) box.dataset.vid = "node-" + node.id;
-    const labels = Object.keys(locals).filter((key) => locals[key] && locals[key].t === "alias" && locals[key].id === node.id);
+    const labels = Object.keys(locals).filter((key) => {
+      const value = locals[key];
+      return value && value.id === node.id && (value.t === "alias" || value.t === "dict");
+    });
     if (labels.length) {
       box.classList.add("is-now");
       const small = document.createElement("small");
@@ -4673,19 +4896,22 @@ print(ages["Ada"])
   function bootChrome() {
     injectStyle();
     const header = document.querySelector("body > header");
-    if (header && !header.querySelector(".vl-launch")) {
+    if (header && !header.querySelector(".vl-launch-bar")) {
+      const bar = document.createElement("div");
+      bar.className = "vl-launch-bar";
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "vl-launch";
       btn.textContent = "Visual Lab";
       btn.addEventListener("click", showMap);
-      header.appendChild(btn);
+      bar.appendChild(btn);
       const editorBtn = document.createElement("button");
       editorBtn.type = "button";
       editorBtn.className = "vl-launch";
-      editorBtn.textContent = "Code editor";
-      editorBtn.addEventListener("click", showPlayground);
-      header.appendChild(editorBtn);
+      editorBtn.textContent = "Open editor";
+      editorBtn.addEventListener("click", () => { location.href = pythonEditorHref(); });
+      bar.appendChild(editorBtn);
+      header.appendChild(bar);
     }
     const nav = document.querySelector(".layout > nav");
     if (nav && !nav.querySelector(".vl-nav-btn")) {
@@ -4707,7 +4933,8 @@ print(ages["Ada"])
         event.stopPropagation();
         const codeEl = pre.querySelector("code");
         const text = (codeEl ? codeEl.textContent : pre.textContent).trim();
-        openEditorWith(text);
+        try { sessionStorage.setItem("vl-seed-code", text); } catch (err) { /* private mode */ }
+        location.href = pythonEditorHref();
       });
     });
     const main = document.querySelector(".layout > main");
@@ -4755,6 +4982,7 @@ print(ages["Ada"])
       if (!state.open) return;
         if (event.key === "Escape") {
           if (closeSuggest()) return;
+          if (editorOnly()) return;
           event.preventDefault();
           event.stopImmediatePropagation();
           closeLab();
@@ -4797,8 +5025,105 @@ print(ages["Ada"])
     else if (state.seedCode != null) showPlayground();
   }
 
+  function editorOnly() {
+    return document.documentElement.getAttribute("data-editor") === "standalone";
+  }
+
+  function courseFile() {
+    const name = (location.pathname.split("/").pop() || "").split("?")[0];
+    if (name !== "dsa-master-course.html" && name !== "Foundations_of_Artificial_Intelligence.html") return "";
+    return name + (location.hash || "");
+  }
+
+  function pythonEditorHref() {
+    const back = courseFile();
+    return back ? "code-editor.html?from=" + encodeURIComponent(back) : "code-editor.html";
+  }
+
+  function editorFrom() {
+    if (!editorOnly()) return "";
+    let raw = "";
+    try { raw = new URLSearchParams(location.search).get("from") || ""; } catch (err) { return ""; }
+    if (/^(dsa-master-course|Foundations_of_Artificial_Intelligence)\.html(?:#[\w./~%-]*)?$/.test(raw)) return raw;
+    return "";
+  }
+
+  function leaveEditor() {
+    location.href = editorFrom() || "index.html";
+  }
+
+  function paintEditorHome() {
+    if (!ui.root) return;
+    const home = ui.root.querySelector("[data-act=home]");
+    const badge = ui.root.querySelector("[data-lang]");
+    const closeBtn = ui.root.querySelector("[data-act=close]");
+    if (!editorOnly()) {
+      if (home) home.hidden = true;
+      if (badge) badge.hidden = true;
+      return;
+    }
+    const back = editorFrom();
+    if (home) {
+      home.hidden = false;
+      home.textContent = back ? "Close" : "Portfolio";
+      home.title = back ? "Return to the course" : "Go to the portfolio";
+    }
+    if (badge) badge.hidden = false;
+    if (closeBtn) closeBtn.hidden = true;
+    ui.back.hidden = true;
+  }
+
+  function bootStandalone() {
+    injectStyle();
+    window.addEventListener("resize", () => {
+      if (!ui.root || ui.root.hidden) return;
+      ui.root.querySelectorAll(".vl-picture").forEach((picture) => {
+        const fit = picture.querySelector(".vl-fit");
+        if (fit) fitWatch(picture, fit);
+      });
+    });
+    document.addEventListener("mousedown", (event) => {
+      if (!suggestBox) return;
+      if (suggestBox.contains(event.target)) return;
+      if (event.target === ui.editor) return;
+      closeSuggest();
+    });
+    state.reveal = localStorage.getItem(REVEAL_KEY) === "1";
+    document.addEventListener("keydown", (event) => {
+      if (!state.open) return;
+      if (event.key === "Escape") {
+        if (closeSuggest()) return;
+        if (editorFrom()) {
+          event.preventDefault();
+          leaveEditor();
+        }
+        return;
+      }
+      if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+        event.preventDefault();
+        runUser(true);
+      }
+    }, true);
+    window.__vlOpenEditor = openEditorWith;
+    try {
+      const seed = sessionStorage.getItem("vl-seed-code");
+      if (seed != null) {
+        sessionStorage.removeItem("vl-seed-code");
+        state.seedCode = seed;
+      }
+    } catch (err) { /* storage blocked */ }
+    showPlayground();
+    document.title = "Python editor";
+    if (ui.root) ui.root.setAttribute("aria-label", "Python editor");
+  }
+
   function init() {
     if (booted) return;
+    if (editorOnly()) {
+      booted = true;
+      bootStandalone();
+      return;
+    }
     if (!window.DSA_PROBLEMS || !document.querySelector(".layout > nav")) return;
     booted = true;
     bootChrome();

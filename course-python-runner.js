@@ -337,7 +337,8 @@ print(add(2, 3))</textarea>
     const fab = document.createElement("button");
     fab.type = "button";
     fab.className = "py-editor-fab";
-    fab.textContent = "Python";
+    fab.textContent = "Open editor";
+    fab.title = "Open the Python editor";
 
     document.body.appendChild(overlay);
     document.body.appendChild(panel);
@@ -382,7 +383,12 @@ print(add(2, 3))</textarea>
       panel.classList.remove("is-open");
     }
 
-    fab.addEventListener("click", () => openPanel());
+    fab.addEventListener("click", () => {
+      const file = (location.pathname.split("/").pop() || "").split("?")[0];
+      const course = file === "dsa-master-course.html" || file === "Foundations_of_Artificial_Intelligence.html";
+      const from = course ? file + (location.hash || "") : "";
+      location.href = from ? "code-editor.html?from=" + encodeURIComponent(from) : "code-editor.html";
+    });
     overlay.addEventListener("click", closePanel);
     panel.querySelector("#py-close-btn").addEventListener("click", closePanel);
     panel.addEventListener("click", (e) => e.stopPropagation());
@@ -466,12 +472,15 @@ print(add(2, 3))</textarea>
         e.preventDefault();
         e.stopPropagation();
         try { sessionStorage.setItem("vl-seed-code", text); } catch (err) { /* private mode */ }
-        const here = /dsa-master-course\.html$/i.test(location.pathname);
+        const here = /code-editor\.html$/i.test(location.pathname);
         if (here && typeof window.__vlOpenEditor === "function") {
           window.__vlOpenEditor(text);
           return;
         }
-        location.href = "dsa-master-course.html#vl/playground";
+        const file = (location.pathname.split("/").pop() || "").split("?")[0];
+        const course = file === "dsa-master-course.html" || file === "Foundations_of_Artificial_Intelligence.html";
+        const from = course ? file + (location.hash || "") : "";
+        location.href = from ? "code-editor.html?from=" + encodeURIComponent(from) : "code-editor.html";
       });
 
       pre.appendChild(btn);

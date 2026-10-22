@@ -134,4 +134,19 @@ assert.strictEqual(lab.itemCursor(search, 1, "i"), 0);
 assert.strictEqual(lab.itemCursor(search, 2, "i"), 1);
 assert.strictEqual(lab.itemCursor(search, 3, "i"), 2);
 
+const bubble = "for i in range(n):\n    for j in range(n - i - 1):\n        if arr[j] > arr[j + 1]:\n";
+const bubbleRoles = lab.loopRoles(bubble);
+const bubbleLocals = { i: { t: "int", v: 0 }, j: { t: "int", v: 2 }, n: { t: "int", v: 5 } };
+assert.deepStrictEqual(lab.subscripts("if arr[j] > arr[j + 1]:", "arr"), [
+  { name: "j", op: "", delta: 0 },
+  { name: "j", op: "+", delta: 1 },
+]);
+assert.deepStrictEqual(lab.walkFor(bubbleRoles, "arr", bubbleLocals, { frames: [{ line: 3 }], index: 0, source: bubble }), { name: "j", index: 2 });
+
+const windowPtrs = new Map([[0, ["lo"]], [3, ["mid"]], [6, ["hi"]]]);
+assert.deepStrictEqual(lab.indexSpan(windowPtrs, 7, 3), { lo: 0, hi: 6 });
+const pairPtrs = new Map([[0, ["i"]], [2, ["j"]]]);
+assert.strictEqual(lab.indexSpan(pairPtrs, 5, 2), null);
+assert.deepStrictEqual(lab.indexSpan(new Map([[2, ["i"]]]), 5, 2), { lo: 2, hi: 4 });
+
 console.log("dsa-visual-lab tests passed");
